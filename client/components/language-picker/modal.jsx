@@ -3,12 +3,21 @@
 /**
  * External dependencies
  */
-
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { localize } from 'i18n-calypso';
-import { find, includes, map, noop, partial, startsWith, isEmpty, some } from 'lodash';
+import {
+	find,
+	includes,
+	isEmpty,
+	map,
+	noop,
+	partial,
+	some,
+	startsWith,
+} from 'lodash';
 
 /**
  * Internal dependencies
@@ -326,7 +335,7 @@ export class LanguagePickerModal extends PureComponent {
 
 		return (
 			<Dialog
-				isVisible
+				isVisible={ isVisible }
 				buttons={ buttons }
 				onClose={ this.handleClose }
 				additionalClassNames="language-picker__modal"
