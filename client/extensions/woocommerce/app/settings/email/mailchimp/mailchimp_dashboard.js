@@ -23,10 +23,11 @@ import {
 	mailChimpSettings,
 	isRequestingSettings,
 	isRequestingSyncStatus,
-	isSavingSettings,
+	isSavingMailChimpSettings,
+	isSubmittingNewsletterSetting,
+	newsletterSettingsSubmitError,
 	} from 'woocommerce/state/sites/settings/mailchimp/selectors';
 import { submitMailChimpNewsletterSettings, requestResync } from 'woocommerce/state/sites/settings/mailchimp/actions.js';
-import { isSubmittingNewsletterSetting, newsletterSettingsSubmitError } from 'woocommerce/state/sites/settings/mailchimp/selectors';
 import { errorNotice, successNotice } from 'state/notices/actions';
 import SyncTab from './sync_tab.js';
 
@@ -215,7 +216,7 @@ export default connect(
 		isRequestingSettings: isRequestingSettings( state, siteId ),
 		isRequestingSyncStatus: isRequestingSyncStatus( state, siteId ),
 		isSaving: isSubmittingNewsletterSetting( state, siteId ),
-		saveSettingsRequest: isSavingSettings( state, siteId ),
+		saveSettingsRequest: isSavingMailChimpSettings( state, siteId ),
 		newsletterSettingsSubmitError: newsletterSettingsSubmitError( state, siteId ),
 		settings: mailChimpSettings( state, siteId ),
 	} ),
@@ -223,6 +224,6 @@ export default connect(
 		errorNotice,
 		successNotice,
 		submitMailChimpNewsletterSettings,
-		requestResync
+		requestResync,
 	}
 )( localize( MailChimpDashboard ) );

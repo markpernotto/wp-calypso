@@ -15,7 +15,9 @@ import React from 'react';
 import { getLink } from 'woocommerce/lib/nav-utils';
 import { getSelectedSiteWithFallback } from 'woocommerce/state/sites/selectors';
 import { mailChimpSaveSettings } from 'woocommerce/state/sites/settings/mailchimp/actions';
-import { isSavingSettings } from 'woocommerce/state/sites/settings/mailchimp/selectors';
+import { emailSettingsSaveSettings } from 'woocommerce/state/sites/settings/email/actions';
+import { isSavingMailChimpSettings } from 'woocommerce/state/sites/settings/mailchimp/selectors';
+import { isSavingEmailSettings } from 'woocommerce/state/sites/settings/email/selectors';
 import ActionHeader from 'woocommerce/components/action-header';
 import Button from 'components/button';
 import EmailSettings from './email-settings';
@@ -23,7 +25,15 @@ import MailChimp from './mailchimp';
 import Main from 'components/main';
 import SettingsNavigation from '../navigation';
 
-const SettingsEmail = ( { site, translate, className, params, isSaving, mailChimpSaveSettings: saveSettings } ) => {
+const SettingsEmail = ( {
+	site,
+	translate,
+	className,
+	params,
+	isSaving,
+	mailChimpSaveSettings: saveMailChimp,
+	emailSettingsSaveSettings: saveSettings,
+} ) => {
 	const breadcrumbs = [
 		( <a href={ getLink( '/store/settings/:site/', site ) }>{ translate( 'Settings' ) }</a> ),
 		( <span>{ translate( 'Email' ) }</span> ),
@@ -32,9 +42,10 @@ const SettingsEmail = ( { site, translate, className, params, isSaving, mailChim
 	const { setup } = params;
 	const startWizard = 'wizard' === setup;
 
-	const onSave = () => (
-		saveSettings( site.ID )
-	);
+	const onSave = () => {
+		saveMailChimp( site.ID );
+		saveSettings( site.ID );
+	};
 
 	return (
 		<Main className={ classNames( 'email', className ) } wideLayout>
@@ -65,14 +76,17 @@ function mapStateToProps( state ) {
 	const site = getSelectedSiteWithFallback( state );
 	return {
 		site,
-		isSaving: isSavingSettings( state, site.ID ),
+		isSaving:
+			isSavingMailChimpSettings( state, site.ID ) ||
+			isSavingEmailSettings( state, site.ID ),
 	};
 }
 
 function mapDispatchToProps( dispatch ) {
 	return bindActionCreators(
 		{
-			mailChimpSaveSettings
+			mailChimpSaveSettings,
+			emailSettingsSaveSettings,
 		},
 		dispatch
 	);
