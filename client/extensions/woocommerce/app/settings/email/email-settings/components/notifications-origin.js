@@ -15,8 +15,7 @@ import FormTextInput from 'components/forms/form-text-input';
 import FormLabel from 'components/forms/form-label';
 import FormSettingExplanation from 'components/forms/form-setting-explanation';
 import FormTextValidation from 'components/forms/form-input-validation';
-
-const NotificationsOrigin = ( { item, recipient, onChange, isPlaceholder, checkEmail, translate } ) => {
+const NotificationsOrigin = ( { item, recipient, onChange, isPlaceholder, checkEmail, translate, placeholder } ) => {
 	const change = ( { target: { value } } ) => {
 		onChange(
 			{
@@ -46,6 +45,7 @@ const NotificationsOrigin = ( { item, recipient, onChange, isPlaceholder, checkE
 					name={ item.field }
 					onChange={ change }
 					value={ recipient }
+					placeholder={ placeholder }
 				/>
 				{ emailValidationError && (
 					<FormTextValidation
