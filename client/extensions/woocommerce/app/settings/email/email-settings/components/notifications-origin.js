@@ -1,3 +1,5 @@
+/** @format */
+
 /**
  * External dependencies
  */
@@ -15,30 +17,34 @@ import FormTextInput from 'components/forms/form-text-input';
 import FormLabel from 'components/forms/form-label';
 import FormSettingExplanation from 'components/forms/form-setting-explanation';
 import FormTextValidation from 'components/forms/form-input-validation';
-const NotificationsOrigin = ( { item, recipient, onChange, isPlaceholder, checkEmail, translate, placeholder } ) => {
+const NotificationsOrigin = ( {
+	item,
+	recipient,
+	onChange,
+	isPlaceholder,
+	checkEmail,
+	translate,
+	placeholder,
+} ) => {
 	const change = ( { target: { value } } ) => {
-		onChange(
-			{
-				setting: item.field,
-				option: item.option,
-				value,
-			}
-		);
+		onChange( {
+			setting: item.field,
+			option: item.option,
+			value,
+		} );
 	};
 
-	const emailValidationError = checkEmail &&
-		( recipient.length !== 0 ) &&
-		! emailValidator.validate( recipient );
+	const emailValidationError =
+		checkEmail && recipient.length !== 0 && ! emailValidator.validate( recipient );
 
 	return (
 		<ListItem>
 			<ListItemField className="components__notification-origin">
-				{ ! isPlaceholder
-					? <FormLabel>
-						{ item.title }
-					</FormLabel>
-					: <p className="components__is-placeholder" />
-				}
+				{ ! isPlaceholder ? (
+					<FormLabel>{ item.title }</FormLabel>
+				) : (
+					<p className="components__is-placeholder" />
+				) }
 				<FormTextInput
 					className={ isPlaceholder ? 'components__is-placeholder' : null }
 					isError={ emailValidationError }
@@ -55,12 +61,11 @@ const NotificationsOrigin = ( { item, recipient, onChange, isPlaceholder, checkE
 						} ) }
 					/>
 				) }
-				{ ! isPlaceholder
-					? <FormSettingExplanation>
-						{ item.subtitle }
-					</FormSettingExplanation>
-					: <p className="components__is-placeholder" />
-				}
+				{ ! isPlaceholder ? (
+					<FormSettingExplanation>{ item.subtitle }</FormSettingExplanation>
+				) : (
+					<p className="components__is-placeholder" />
+				) }
 			</ListItemField>
 		</ListItem>
 	);
