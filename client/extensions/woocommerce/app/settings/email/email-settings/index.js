@@ -3,7 +3,7 @@
  */
 import { bindActionCreators } from 'redux';
 import { translate } from 'i18n-calypso';
-import { get } from 'lodash';
+import { get, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -15,6 +15,7 @@ import {
 	fetchEmailSettings,
 	emailSettingChange,
 	emailSettingsSubmitSettings,
+	emailSettingsInvalidValue,
 } from 'woocommerce/state/sites/settings/email/actions';
 import {
 	getEmailSettings,
@@ -32,6 +33,7 @@ import NotificationsOrigin from './components/notifications-origin';
 import List from 'woocommerce/components/list/list';
 import ListHeader from 'woocommerce/components/list/list-header';
 import ListItemField from 'woocommerce/components/list/list-item-field';
+import { validateSettings } from './components/helpers';
 
 const originNotifications = [
 	{
@@ -114,7 +116,18 @@ class Settings extends React.Component {
 
 		// Save settings request
 		if ( ( ! this.props.saveSettingsRequest ) && nextProps.saveSettingsRequest ) {
-			nextProps.loaded && nextProps.submit( nextProps.siteId, nextProps.settings );
+			const settingsClean = omit( nextProps.settings, [ 'save', 'isSaving', 'error', 'invalidValue' ] );
+			const areSettingsValid = validateSettings( settingsClean );
+			if ( nextProps.loaded ) {
+				if ( ! areSettingsValid ) {
+					nextProps.emailSettingsInvalidValue( nextProps.siteId, 'Invalid Values.' );
+					nextProps.errorNotice( translate( 'Please correct your Email settings and try again.' ) );
+				} else {
+					nextProps.submit( nextProps.siteId, nextProps.settings );
+				}
+			} else {
+				nextProps.emailSettingsInvalidValue( nextProps.siteId, 'Values not loaded.' );
+			}
 		}
 
 		// Settings save request finished.
@@ -248,6 +261,7 @@ function mapDispatchToProps( dispatch ) {
 			onChange: emailSettingChange,
 			fetchSettings: fetchEmailSettings,
 			submit: emailSettingsSubmitSettings,
+			emailSettingsInvalidValue,
 			errorNotice,
 			successNotice,
 		},
