@@ -1,7 +1,13 @@
 /**
+ * External dependencies
+ */
+import { isEmpty } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import request from '../../request';
+import { mailChimpSettings } from './selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import {
 	WOOCOMMERCE_MAILCHIMP_API_KEY_SUBMIT_FAILURE,
@@ -363,11 +369,17 @@ export const submitMailChimpNewsletterSettings = ( siteId, newsLetter ) => ( dis
  * isSaveSettingsReqested
  *
  * @param  {Number|String} siteId      Jetpack site ID
- * @param  {Object}        newsLetter  MailChimp newsletter settings object
  * @return {Function}                  Action thunk
  */
-export const mailChimpSaveSettings = ( siteId ) => ( dispatch ) => {
+export const mailChimpSaveSettings = ( siteId ) => ( dispatch, getState ) => {
 	if ( null == siteId ) {
+		return;
+	}
+
+	const settings = mailChimpSettings( getState(), siteId );
+
+	const validSettings = ! isEmpty( settings ) && settings.active_tab === 'sync';
+	if ( ! validSettings ) {
 		return;
 	}
 
