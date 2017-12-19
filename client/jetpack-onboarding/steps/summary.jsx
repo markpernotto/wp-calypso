@@ -3,13 +3,15 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import { localize } from 'i18n-calypso';
 
 /**
  * Internal dependencies
  */
 import FormattedHeader from 'components/formatted-header';
+import PageViewTracker from 'lib/analytics/page-view-tracker';
+import { JETPACK_ONBOARDING_STEPS as STEPS } from '../constants';
 
 class JetpackOnboardingSummaryStep extends React.PureComponent {
 	render() {
@@ -19,7 +21,16 @@ class JetpackOnboardingSummaryStep extends React.PureComponent {
 			'You enabled Jetpack and unlocked dozens of website-bolstering features. Continue preparing your site below.'
 		);
 
-		return <FormattedHeader headerText={ headerText } subHeaderText={ subHeaderText } />;
+		return (
+			<Fragment>
+				<PageViewTracker
+					path={ '/jetpack/onboarding/' + STEPS.SUMMARY + '/:site' }
+					title="Summary ‹ Jetpack Onboarding"
+				/>
+
+				<FormattedHeader headerText={ headerText } subHeaderText={ subHeaderText } />
+			</Fragment>
+		);
 	}
 }
 
