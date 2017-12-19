@@ -5,7 +5,6 @@
  */
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { localize } from 'i18n-calypso';
 import { find, includes, isEmpty, map, noop, partial, some, startsWith } from 'lodash';
@@ -13,15 +12,13 @@ import { find, includes, isEmpty, map, noop, partial, some, startsWith } from 'l
 /**
  * Internal dependencies
  */
-import { getGeoCountryShort } from 'state/geo/selectors';
-import QueryGeo from 'components/data/query-geo';
 import Dialog from 'components/dialog';
 import SectionNav from 'components/section-nav';
 import SectionNavTabs from 'components/section-nav/tabs';
 import SectionNavTabItem from 'components/section-nav/item';
 import Search from 'components/search';
-import { getTerritoryFromCountry, getTerritoryById } from './utils';
-import { TERRITORIES } from './constants';
+import { getLanguageGroupById, getLanguageGroupByLangSlug } from './utils';
+import { LANGUAGE_GROUPS, DEFAULT_LANGUAGE_GROUP } from './constants';
 
 export class LanguagePickerModal extends PureComponent {
 	static propTypes = {
@@ -30,7 +27,6 @@ export class LanguagePickerModal extends PureComponent {
 		isVisible: PropTypes.bool,
 		languages: PropTypes.array.isRequired,
 		selected: PropTypes.string,
-		countryCode: PropTypes.string,
 	};
 
 	static defaultProps = {
@@ -38,14 +34,13 @@ export class LanguagePickerModal extends PureComponent {
 		onClose: noop,
 		isVisible: false,
 		selected: 'en',
-		countryCode: '',
 	};
 
 	constructor( props ) {
 		super( props );
 
 		this.state = {
-			filter: getTerritoryFromCountry( this.props.countryCode ),
+			filter: getLanguageGroupByLangSlug( props.selected, props.languages, true ),
 			showingDefaultFilter: true,
 			search: false,
 			selectedLanguageSlug: this.props.selected,
@@ -53,38 +48,19 @@ export class LanguagePickerModal extends PureComponent {
 		};
 	}
 
-	componentWillReceiveProps( nextProps ) {
-		if ( nextProps.selected !== this.state.selectedLanguageSlug ) {
-			this.setState( {
-				selectedLanguageSlug: nextProps.selected,
-			} );
-		}
-
-		if ( nextProps.languages !== this.props.languages ) {
-			this.setState( {
-				suggestedLanguages: this.getSuggestedLanguages(),
-			} );
-		}
-
-		if ( this.state.showingDefaultFilter && nextProps.countryCode !== this.props.countryCode ) {
-			this.setState( {
-				filter: getTerritoryFromCountry( nextProps.countryCode ),
-			} );
-		}
-	}
-
 	getFilterLabel( filter ) {
-		const territory = getTerritoryById( filter );
+		const { translate } = this.props;
 
-		if ( ! territory ) {
+		const language_group = getLanguageGroupById( filter );
+		if ( ! language_group ) {
 			return undefined;
 		}
-
 		// `territory.name` is a lambda that takes the `translate` function
-		return territory.name( this.props.translate );
+		return language_group.name( translate );
 	}
 
-	getFilterFunction() {
+	getFilteredLanguages() {
+		const { languages } = this.props;
 		const { search, filter } = this.state;
 
 		if ( search ) {
@@ -93,20 +69,22 @@ export class LanguagePickerModal extends PureComponent {
 		}
 
 		if ( filter ) {
-			const territory = getTerritoryById( filter );
-			const subTerritories = territory ? territory.subTerritories : null;
-			return language => some( language.territories, t => includes( subTerritories, t ) );
+			switch ( filter ) {
+				case 'popular':
+					return languages
+						.filter( language => language.popular )
+						.sort( ( a, b ) => a.popular - b.popular );
+				default:
+					const language_group = getLanguageGroupById( filter );
+					const subTerritories = language_group ? language_group.subTerritories : null;
+					return languages
+						.filter( language => some( language.territories, t => includes( subTerritories, t ) ) )
+						.sort( ( a, b ) => a.name.localeCompare( b.name ) );
+			}
 		}
 
 		// By default, show all languages
 		return Boolean;
-	}
-
-	getDisplayedLanguages() {
-		const filterFn = this.getFilterFunction();
-		const filteredLanguages = this.props.languages.filter( filterFn );
-		filteredLanguages.sort( ( a, b ) => a.name.localeCompare( b.name ) );
-		return filteredLanguages;
 	}
 
 	getSuggestedLanguages() {
@@ -153,13 +131,14 @@ export class LanguagePickerModal extends PureComponent {
 	};
 
 	renderTabItems() {
-		return map( TERRITORIES, territory => {
-			const filter = territory.id;
+		return map( LANGUAGE_GROUPS, language_group => {
+			const filter = language_group.id;
 			const selected = this.state.filter === filter;
+
 			const onClick = () =>
 				this.setState( {
 					filter,
-					showingDefaultFilter: false,
+					showingDefaultFilter: filter === DEFAULT_LANGUAGE_GROUP,
 				} );
 
 			return (
@@ -171,7 +150,7 @@ export class LanguagePickerModal extends PureComponent {
 	}
 
 	renderLanguageList() {
-		const languages = this.getDisplayedLanguages();
+		const languages = this.getFilteredLanguages();
 
 		return (
 			<div className="language-picker__modal-list">
@@ -242,12 +221,11 @@ export class LanguagePickerModal extends PureComponent {
 
 		return (
 			<Dialog
-				isVisible={ isVisible }
+				isVisible
 				buttons={ buttons }
 				onClose={ this.handleClose }
 				additionalClassNames="language-picker__modal"
 			>
-				<QueryGeo />
 				<SectionNav selectedText={ this.getFilterLabel( this.state.filter ) }>
 					<SectionNavTabs>{ this.renderTabItems() }</SectionNavTabs>
 					<Search
@@ -264,6 +242,4 @@ export class LanguagePickerModal extends PureComponent {
 	}
 }
 
-export default connect( state => ( {
-	countryCode: getGeoCountryShort( state ),
-} ) )( localize( LanguagePickerModal ) );
+export default localize( LanguagePickerModal );
