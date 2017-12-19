@@ -20,4 +20,26 @@
 			margin: 0 8px 20px;
 		}
 	}
+
+	.steps__tile-enter {
+		opacity: 0.01;
+
+		.is-animated-content {
+			transform: translate3d( 0, 32px, 0 );
+		}
+	}
+	
+	.steps__tile-leave {
+		opacity: 1;
+
+		.is-animated-content {
+			transform: translate3d( 0, 0, 0 );
+		}
+	}
+
+	.steps__tile {
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.2s ease-in-out;
+	}
 }

@@ -4,6 +4,7 @@
  * External dependencies
  */
 import React, { Fragment } from 'react';
+import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -25,16 +26,21 @@ class JetpackOnboardingContactFormStep extends React.PureComponent {
 				<DocumentHead title={ translate( 'Contact Form ‹ Jetpack Onboarding' ) } />
 
 				<FormattedHeader headerText={ headerText } subHeaderText={ subHeaderText } />
-
-				<TileGrid>
-					<Tile
-						buttonLabel={ translate( 'Add a contact form' ) }
-						description={ translate(
-							'Not sure? You can skip this step and add a contact form later.'
-						) }
-						image={ '/calypso/images/illustrations/contact-us.svg' }
-					/>
-				</TileGrid>
+				<ReactCSSTransitionGroup
+					transitionName="steps__tile"
+					transitionEnterTimeout={ 200 }
+					transitionLeaveTimeout={ 200 }
+				>
+					<TileGrid>
+						<Tile
+							buttonLabel={ translate( 'Add a contact form' ) }
+							description={ translate(
+								'Not sure? You can skip this step and add a contact form later.'
+							) }
+							image={ '/calypso/images/illustrations/contact-us.svg' }
+						/>
+					</TileGrid>
+				</ReactCSSTransitionGroup>
 			</Fragment>
 		);
 	}
