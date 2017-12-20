@@ -104,6 +104,10 @@ class SiteSelector extends Component {
 			return;
 		}
 
+		if ( typeof document === 'undefined' ) {
+			return;
+		}
+
 		// Note: Update CSS selectors if the class names change.
 		const highlightedSiteElem = document.body.querySelector(
 			'.site-selector .site.is-highlighted, .site-selector .all-sites.is-highlighted'
