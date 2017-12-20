@@ -15,13 +15,14 @@ import CalendarCard from './calendar-card';
 import CompactCard from 'components/card/compact';
 import HeaderCake from 'components/header-cake';
 import { getConciergeSignupForm } from 'state/selectors';
-import { getCurrentUserId } from 'state/current-user/selectors';
+import { getCurrentUserId, getCurrentUserLocale } from 'state/current-user/selectors';
 import { bookConciergeAppointment } from 'state/concierge/actions';
 import {
 	CONCIERGE_STATUS_BOOKING,
 	CONCIERGE_STATUS_BOOKED,
 	WPCOM_CONCIERGE_SCHEDULE_ID,
 } from './constants';
+import { isDefaultLocale } from 'lib/i18n-utils';
 
 const NUMBER_OF_DAYS_TO_SHOW = 7;
 
@@ -98,9 +99,9 @@ class CalendarStep extends Component {
 				</CompactCard>
 				{ availability.map( ( { date, times } ) => (
 					<CalendarCard
-						site={ this.props.site }
 						date={ date }
 						disabled={ this.props.signupForm.status === CONCIERGE_STATUS_BOOKING }
+						isDefaultLocale={ isDefaultLocale( this.props.currentUserLocale ) }
 						key={ date }
 						onSubmit={ this.onSubmit }
 						times={ times }
@@ -115,6 +116,7 @@ export default connect(
 	state => ( {
 		signupForm: getConciergeSignupForm( state ),
 		currentUserId: getCurrentUserId( state ),
+		currentUserLocale: getCurrentUserLocale( state ),
 	} ),
 	{ bookConciergeAppointment }
 )( localize( CalendarStep ) );
