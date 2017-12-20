@@ -283,6 +283,7 @@ class RegisterDomainStep extends React.Component {
 						onBlur={ this.save }
 						placeholder={ this.props.translate( 'Enter a name or keyword' ) }
 						autoFocus={ true }
+						dataTipTarget="register-domain-input"
 						delaySearch={ true }
 						delayTimeout={ 1000 }
 						dir="ltr"
