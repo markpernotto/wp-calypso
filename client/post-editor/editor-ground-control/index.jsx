@@ -21,7 +21,6 @@ import { recordEvent } from 'lib/posts/stats';
 import EditorPublishButton, { getPublishButtonStatus } from 'post-editor/editor-publish-button';
 import Button from 'components/button';
 import QuickSaveButtons from 'post-editor/editor-ground-control/quick-save-buttons';
-import DraftsDrawer from 'post-editor/editor-ground-control/drafts-drawer';
 
 export class EditorGroundControl extends PureComponent {
 	static propTypes = {
@@ -254,7 +253,6 @@ export class EditorGroundControl extends PureComponent {
 					//homeLink={ true }
 					//externalLink={ true }
 				/>
-				<DraftsDrawer currentPost={ this.props.post } />
 				{ this.state.needsVerification && (
 					<div
 						className="editor-ground-control__email-verification-notice"
