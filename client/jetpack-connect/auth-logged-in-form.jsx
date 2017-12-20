@@ -189,6 +189,11 @@ export class LoggedInForm extends Component {
 	shouldAutoAuthorize() {
 		const { autoAuthorize } = this.props.authorizationData;
 		const { alreadyAuthorized, newUserStartedConnection } = this.props.authQuery;
+
+		if ( this.props.isMobileAppFlow ) {
+			return false;
+		}
+
 		return (
 			this.isSso() ||
 			this.isWoo() ||
